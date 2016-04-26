@@ -1,0 +1,26 @@
+;Pie Chart;Funnel Chart;Line Chart;Line Chart;Area Chart;Stacked Area Chart;100% Stacked Area Chart;Step Chart;Step Chart;Bar Chart;Bar Chart;Histogram;Bubble Chart;Bubble Chart;ScatterPlot;ScatterPlot;Angular Gauge;Radar Chart;Radar Chart
+Comparison;Oui;Oui;Non;Oui;Non;Non;Non;Non;Oui;Oui;Oui;Oui;Non;Oui;Non;Oui;Non;Oui;Oui
+Proportion;Oui;Oui;Non;Non;Non;Oui;Oui;Non;Non;Non;Non;Non;Oui;Oui;Non;Non;Non;Oui;Non
+Relationship;Non;Non;Non;Oui;Non;Oui;Oui;Non;Oui;Oui;Oui;Non;Non;Oui;Oui;Oui;Non;Oui;Oui
+Hierarchy;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non
+Location;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non
+Probability;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Oui;Oui;Non;Non;Non;Non;Non
+PartToAWhole;Oui;Oui;Non;Non;Non;Non;Oui;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non
+Distribution;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Non;Oui;Non
+Patterns;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Oui;Oui
+Range;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Non;Non;Non;Non;Non;Non
+OverTime;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non
+Scalar;Oui;Oui;Oui;Oui;Oui;Oui;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non;Oui;Oui;Non
+Discrete;Oui;Oui;Non;Non;Non;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Oui;Oui
+Variations;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non;Oui;Non;Non;Non;Non;Non;Non;Non
+Extremum;Non;Non;Oui;Oui;Oui;Non;Non;Non;Non;Oui;Oui;Oui;Oui;Oui;Non;Non;Non;Oui;Oui
+2D_i;Oui;Oui;Oui;Non;Oui;Non;Non;Oui;Non;Oui;Non;Oui;Non;Non;Oui;Non;Oui;Oui;Non
+2D+_i;Non;Non;Non;Oui;Non;Oui;Oui;Non;Oui;Non;Oui;Non;Non;Non;Non;Oui;Non;Non;Oui
+3D_i;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Non;Non;Non;Non;Non
+3D+_i;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Non;Non;Non;Non
+1D_o;Oui;Oui;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Oui;Non
+1D+_o;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui
+2D_o;Non;Non;Oui;Non;Oui;Non;Non;Oui;Non;Oui;Non;Oui;Non;Non;Non;Non;Non;Non;Non
+2D+_o;Non;Non;Non;Oui;Non;Oui;Oui;Non;Oui;Non;Oui;Non;Non;Non;Non;Non;Non;Non;Non
+3D_o;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Oui;Non;Non;Non;Non
+3D+_o;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Oui;Non;Non;Non

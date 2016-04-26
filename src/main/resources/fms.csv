@@ -1,0 +1,21 @@
+;Pie Chart;Funnel Chart;Line Chart;Smoothed Line Chart;Area Chart;Ohlc Chart;Step Chart;Bar Chart;Column Chart;XY/Bubble Chart;Angular Gauge;Radar Chart
+Comparison;Oui;Oui;Oui;Oui;Non;Non;Oui;Oui;Oui;Non;Non;Oui
+Proportion;Oui;Oui;Non;Non;Oui;Non;Non;Non;Non;Oui;Non;Non
+Relationship;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Oui
+Hierarchy;;;;;;;;;;;;
+Location;;;;;;;;;;;;
+Probability;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Oui;Non;Non
+PartToAWhole;;;;;;;;;;;;
+Distribution;Non;Non;Non;Non;Non;Oui;Non;Non;Oui;Oui;Non;Oui
+Patterns;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui
+Range;Non;Non;Non;Non;Non;Oui;Non;Non;Oui;Non;Oui;Non
+OverTime;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non
+Scalar;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Oui
+Discrete;Oui;Oui;Non;Non;Non;Oui;Oui;Oui;Oui;Oui;Non;Oui
+Variations;Non;Non;Oui;Oui;Oui;Non;Oui;Non;Oui;Oui;Non;Non
+Extremum;Non;Non;Oui;Oui;Non;Non;Non;Oui;Oui;Oui;Non;Oui
+1D;Oui;Oui;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Oui
+2D;;;;;;;;;;;;
+2D+;Non;Non;Oui;Oui;Oui;Oui;Oui;Oui;Oui;Non;Non;Non
+3D;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Non
+3D+;Non;Non;Non;Non;Non;Non;Non;Non;Non;Oui;Non;Non

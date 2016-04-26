@@ -128,6 +128,7 @@ public class Universe {
             }
             if(widgets_fm_ids.isEmpty())
                 throw new EmptyUniverseException("The reduction lead to no widget left");
+            //TODO do we really want an exception here ?
             this.fmID = pilot.merge(widgets_fm_ids);
             this.widgets = newWidgetList;
         } catch (FMEngineException e) {
