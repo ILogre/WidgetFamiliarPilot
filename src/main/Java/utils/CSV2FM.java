@@ -35,8 +35,6 @@ public class CSV2FM {
 
         String outputFmPath = outputFm.getPath();
         String outputProductPath = outputProduct.getPath();
-        //String outputFmPath = CSV2FM.class.getClassLoader().getResource(inputCSV+"_fms_functions.fml").getPath();
-        //String outputProductPath = CSV2FM.class.getClassLoader().getResource(inputCSV+"_fms_products.fml").getPath();
 
         // File -> String
         String[][] table = new String[nbLig][nbCol];
@@ -62,9 +60,7 @@ public class CSV2FM {
         StringBuilder fms = new StringBuilder();
         for(int c=1;c<nbCol;c++){
             fms.append("FM(widget:Name Library");
-            //fms.append("fm"+c+" = FM(widget:Name Library");
             for(int l=1;l<nbLig;l++){
-                //System.out.println("l:"+l+" c:"+c);
                 if(table[l][c].equals("Oui")) {
                     fms.append(" " + table[l][0]);
                 }

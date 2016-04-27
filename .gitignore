@@ -2,3 +2,6 @@
 /target
 *.htm
 *.html
+*.xlsx
+/src/main/resources/*
+/src/main/resources/BAK/*

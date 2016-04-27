@@ -24,11 +24,6 @@ public class Universe {
     private String fmID;
     private List<Widget> widgets;
 
-    public Universe() throws IOException, UnhandledFamiliarException {
-        this(Universe.class.getClassLoader().getResource("fms_min.fml").getPath());
-    }
-
-
     /* Launch the evaluation on the file widgetsFormulaPath, line by line.
      * It should declare the "atomic" features models (products)
      * we store their fmID in familiar and their formula used to instantiate them in Widgets
