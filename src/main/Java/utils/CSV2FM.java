@@ -1,13 +1,7 @@
 package utils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
+import java.net.URL;
 
 /**
  * Created by ivan on 26/04/2016.
@@ -15,21 +9,41 @@ import java.io.Writer;
 
 public class CSV2FM {
 
-    private static String INPUT_FILE = CSV2FM.class.getClassLoader().getResource("fms.csv").getPath();
-    private static String OUTPUT_FM_FILE = CSV2FM.class.getClassLoader().getResource("fms_functions.fml").getPath();
-    private static String OUTPUT_PRODUCTS_FILE = CSV2FM.class.getClassLoader().getResource("fms_products.fml").getPath();
-    private static int nbCol = 13;
-    private static int nbLig = 13;
-    private static int nbLigSup = 14;
+
+    //private static int nbCol = 16;
+    //private static int nbLig = 26;
 
 
-    public static void main(String[] args) {
+    public static void transformCSV2FM(String inputCSV,int nbCol,int nbLig) {
+
+        String inputPath = "src/main/resources/"+inputCSV+".csv";
+
+        File outputFm = new File("src/main/resources/"+inputCSV+"_fms_functions.fml");
+        if(!outputFm.exists())
+            try {
+                outputFm.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        File outputProduct = new File("src/main/resources/"+inputCSV+"_fms_products.fml");
+        if(!outputProduct.exists())
+            try {
+                outputProduct.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        String outputFmPath = outputFm.getPath();
+        String outputProductPath = outputProduct.getPath();
+        //String outputFmPath = CSV2FM.class.getClassLoader().getResource(inputCSV+"_fms_functions.fml").getPath();
+        //String outputProductPath = CSV2FM.class.getClassLoader().getResource(inputCSV+"_fms_products.fml").getPath();
+
         // File -> String
-        String[][] table = new String[nbLigSup][nbCol];
+        String[][] table = new String[nbLig][nbCol];
         int i,j;
 
         try {
-            InputStream ips = new FileInputStream(INPUT_FILE);
+            InputStream ips = new FileInputStream(inputPath);
             InputStreamReader ipsr = new InputStreamReader(ips);
             BufferedReader br = new BufferedReader(ipsr);
             String ligne;
@@ -46,23 +60,24 @@ public class CSV2FM {
         }
 
         StringBuilder fms = new StringBuilder();
-        for(int c=1;c<13;c++){
-            fms.append("fm"+c+" = FM(widget:Name");
+        for(int c=1;c<nbCol;c++){
+            fms.append("FM(widget:Name Library");
+            //fms.append("fm"+c+" = FM(widget:Name Library");
             for(int l=1;l<nbLig;l++){
-                if(table[l][c].equals("Oui"))
-                    fms.append(" "+table[l][0]);
+                //System.out.println("l:"+l+" c:"+c);
+                if(table[l][c].equals("Oui")) {
+                    fms.append(" " + table[l][0]);
+                }
             }
-            for(int l=nbLig;l<nbLigSup;l++)
-                fms.append(" "+table[l][0]);
             fms.append("; Name:\""+table[0][c]+"\";");
-            for(int l=nbLig;l<nbLigSup;l++)
-                fms.append(" "+table[l][0]+":"+table[l][c]+";");
+            fms.append(" Library:\""+inputCSV+"\";");
             fms.append(")\n");
         }
         try{
             Writer writer = null;
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(OUTPUT_FM_FILE), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFmPath), "utf-8"));
             writer.write(fms.toString());
+            writer.flush();
             writer.close();
         } catch (Exception e) {
             System.err.println(e);
@@ -75,23 +90,22 @@ public class CSV2FM {
                 if(table[l][c].equals("Oui"))
                     products.append(" "+table[l][0]+",");
             }
-            for(int l=nbLig;l<nbLigSup;l++)
-                products.append(" "+table[l][0]+", "+table[l][c]+",");
             products.deleteCharAt(products.length()-1);
             products.append("]\n");
         }
         try{
             Writer writer = null;
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(OUTPUT_PRODUCTS_FILE), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputProductPath), "utf-8"));
             writer.write(products.toString());
+            writer.flush();
             writer.close();
         } catch (Exception e) {
             System.err.println(e);
         }
 
 
-        System.out.println(fms.toString());
-        System.out.println(products.toString());
+        //System.out.println(fms.toString());
+        //System.out.println(products.toString());
 
 /*		for(int m=0;m<table.length;m++){
 			for(int n=0;n<table[m].length;n++){

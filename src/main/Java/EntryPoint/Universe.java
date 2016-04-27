@@ -33,7 +33,9 @@ public class Universe {
      * It should declare the "atomic" features models (products)
      * we store their fmID in familiar and their formula used to instantiate them in Widgets
      */
-    public Universe(String widgetsFormulaPath) throws IOException, UnhandledFamiliarException {
+    public Universe(String inputFormula) throws IOException, UnhandledFamiliarException {
+        String widgetsFormulaPath = Universe.class.getClassLoader().getResource(inputFormula+"_fms_functions.fml").getPath();
+
         widgets = new ArrayList<>();
         // test the existence of the file
         if (!new File(widgetsFormulaPath).exists())
