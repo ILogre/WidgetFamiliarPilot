@@ -38,15 +38,16 @@ public class Pilot {
         //else
         //	_shell = FMLShell.getInstance();
         _environment = _shell.getCurrentEnv();
-        _shell.setVerbose(false);
+        _shell.setVerbose(true);
         log.debug("Environment du shell :"+_environment);
         hasBeenParsed = false;
     }
 
     public static Pilot getInstance() {
-        if(instance==null)
+        if(instance==null) {
             instance = new Pilot();
-        instance.getShell().printFMLHeader();
+            instance.getShell().printFMLHeader();
+        }
         return instance;
     }
 

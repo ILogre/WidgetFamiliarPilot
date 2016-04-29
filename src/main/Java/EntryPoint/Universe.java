@@ -28,17 +28,29 @@ public class Universe {
      * It should declare the "atomic" features models (products)
      * we store their fmID in familiar and their formula used to instantiate them in Widgets
      */
-    public Universe(String inputFormula) throws IOException, UnhandledFamiliarException {
+    public Universe(String inputFormula) throws IOException, UnhandledFamiliarException, VariableNotExistingException, VariableAmbigousConflictException {
         String widgetsFormulaPath = Universe.class.getClassLoader().getResource(inputFormula+"_fms_functions.fml").getPath();
 
         widgets = new ArrayList<>();
         // test the existence of the file
         if (!new File(widgetsFormulaPath).exists())
             throw new IOException("The given path -"+widgetsFormulaPath+"- does not exist !");
-        List<String> inlineWidgets = pilot.extractFMsByFile(widgetsFormulaPath);
-        for(String formula:inlineWidgets)
-            widgets.add(new Widget(formula));
-        this.fmID = pilot.merge(getWidgetsIDs());
+        List<String> inlineFMs = pilot.extractFMsByFile(widgetsFormulaPath);
+        List<String> fmIDs = new ArrayList<>();
+
+        for(String formula:inlineFMs){
+            Implementation i = new Implementation(formula);
+            FeatureVariable fv = pilot.getFVariable(i.getFmID()+".Name");
+            String widgetName = fv.children().getVars().toArray(new Variable[]{})[0].getValue();
+            Widget widget = new Widget(widgetName);
+            if(!this.widgets.contains(widget))
+                this.widgets.add(widget);
+            else
+                widget=this.widgets.get(this.widgets.indexOf(widget));
+            widget.addImplementation(i);
+            fmIDs.add(i.getFmID());
+        }
+        this.fmID = pilot.merge(fmIDs);
     }
 
     public static Universe merge(Universe u1, Universe u2){
@@ -46,11 +58,19 @@ public class Universe {
         widgetList.addAll(u1.getWidgets());
         widgetList.addAll(u2.getWidgets());
 
-        List<String> widgetIDList = new ArrayList<>();
-        widgetIDList.addAll(u1.getWidgetsIDs());
-        widgetIDList.addAll(u2.getWidgetsIDs());
+
+      List<String> widgetIDList = new ArrayList<>();
+        widgetIDList.addAll(u1.getFMIDs());
+        widgetIDList.addAll(u2.getFMIDs());
 
         String newID = pilot.merge(widgetIDList);
+        System.out.println("Merging fms "+u1.fmID+" and "+u2.fmID+ "has been performed in "+newID);
+
+/*        List<String> widgetIDList = new ArrayList<>();
+        widgetIDList.add(u1.fmID);
+        widgetIDList.add(u2.fmID);
+        String newID = pilot.merge(widgetIDList);*/
+
         return new Universe(newID, widgetList);
     }
 
@@ -98,38 +118,48 @@ public class Universe {
     /*
      * This function take a list of features to select on a given configuration
      */
-    public void reduceByConcerns(List<String> ls) throws ReductionException, BadIDException, EmptyUniverseException {
+    public void reduceByFeatures(List<String> ls) throws ReductionException, BadIDException, EmptyUniverseException, ReducingException {
         for(String s : ls)
-            reduceByConcern(s);
+            reduceByFeature(s);
     }
 
+
     /*
-     * This function take a feature to select on a given configuration
-     */
-    public void reduceByConcern(String concern) throws ReductionException, BadIDException, EmptyUniverseException {
+ * This function take a feature to select on a given configuration
+ */
+    public void reduceByFeature(String feature) throws ReductionException, BadIDException, EmptyUniverseException, ReducingException {
         try {
             String configID = pilot.newConfig(fmID);
-            pilot.selectFeatureOnConfiguration(concern,configID);
+
+            pilot.selectFeatureOnConfiguration(feature,configID);
+
             this.fmID = pilot.asFM(configID);
-            List<String> remains = getWidgetsNames();
-            List<String> widgets_fm_ids = new ArrayList<>();
-            List<Widget> newWidgetList = new ArrayList<>();
-            for(String remain : remains) {
-                for (Widget widget : this.widgets) {
-                    if (widget.getName().equalsIgnoreCase(remain)) {
-                        widgets_fm_ids.add(widget.getWidgetID());
-                        newWidgetList.add(widget);
-                        break;
+            List<String> remains = getImplementationUniques();
+            List<String> implementationIDs = new ArrayList<>();
+            List<Widget> newWidgetsList = new ArrayList<>();
+            List<Implementation> newImplementationList = new ArrayList<>();
+            for (String remain : remains) {
+                for (Widget w : this.widgets) {
+                    for (Implementation i : w.getImplementations()) {
+                        if (i.getUnique().equalsIgnoreCase(remain)) {
+                            implementationIDs.add(i.getFmID());
+                            newImplementationList.add(i);
+                            if (!newWidgetsList.contains(w))
+                                newWidgetsList.add(w);
+                            break;
+                        }
                     }
                 }
             }
-            if(widgets_fm_ids.isEmpty())
-                throw new EmptyUniverseException("The reduction lead to no widget left");
-            //TODO do we really want an exception here ?
-            this.fmID = pilot.merge(widgets_fm_ids);
-            this.widgets = newWidgetList;
+
+            if(implementationIDs.isEmpty())
+                throw new EmptyUniverseException("The reduction by widget should never lead to no widget left !");
+
+            this.fmID = pilot.merge(implementationIDs);
+            this.widgets = newWidgetsList;
+
         } catch (FMEngineException e) {
-            throw new ReductionException("Something went bad during reduction by the concern " + concern + " on the Universe " + fmID);
+            throw new ReductionException("Something went bad during reduction by the feature " + feature + " on the Universe " + fmID);
         }
     }
 
@@ -160,6 +190,24 @@ public class Universe {
         FeatureVariable f_var;
         try{
             f_var = pilot.getFVariable(fmID +".Name");
+        } catch (VariableNotExistingException | VariableAmbigousConflictException e) {
+            throw new BadIDException("The fmID " + this.fmID + " appears to be incorrect.");
+        }
+        for(Variable v : f_var.children().getVars()){
+            FeatureVariable fv = (FeatureVariable) v;
+            res.add(fv.getFtName());
+        }
+        return res;
+    }
+
+    /*
+     * Returns  the "Unique" identifiers of the implementations still available.
+     */
+    public List<String> getImplementationUniques() throws BadIDException {
+        List<String> res = new ArrayList<>();
+        FeatureVariable f_var;
+        try{
+            f_var = pilot.getFVariable(fmID +".Unique");
         } catch (VariableNotExistingException | VariableAmbigousConflictException e) {
             throw new BadIDException("The fmID " + this.fmID + " appears to be incorrect.");
         }
@@ -226,11 +274,12 @@ public class Universe {
 
     /* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _Private useful methods _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _*/
 
-    private List<String> getWidgetsIDs(){
-        List<String> widgetsIDs = new ArrayList<>();
+    private List<String> getFMIDs(){
+        List<String> FMIDs = new ArrayList<>();
         for(Widget widget : widgets)
-            widgetsIDs.add(widget.getWidgetID());
-        return widgetsIDs;
+            for(Implementation i : widget.getImplementations())
+                FMIDs.add(i.getFmID());
+        return FMIDs;
     }
 
 

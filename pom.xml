@@ -18,7 +18,7 @@
         <dependency>
             <groupId>fr.familiar</groupId>
             <artifactId>familiar-basic</artifactId>
-            <version>1.2</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

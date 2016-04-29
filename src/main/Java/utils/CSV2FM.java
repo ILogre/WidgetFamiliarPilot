@@ -14,7 +14,7 @@ public class CSV2FM {
     //private static int nbLig = 26;
 
 
-    public static void transformCSV2FM(String inputCSV,int nbCol,int nbLig) {
+    public static void transformCSV2FM(String inputCSV,int nbCol,int nbLig) throws IOException {
 
         String inputPath = "src/main/resources/"+inputCSV+".csv";
 
@@ -25,53 +25,55 @@ public class CSV2FM {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        File outputProduct = new File("src/main/resources/"+inputCSV+"_fms_products.fml");
-        if(!outputProduct.exists())
-            try {
-                outputProduct.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
         String outputFmPath = outputFm.getPath();
-        String outputProductPath = outputProduct.getPath();
+
 
         // File -> String
         String[][] table = new String[nbLig][nbCol];
         int i,j;
 
-        try {
-            InputStream ips = new FileInputStream(inputPath);
-            InputStreamReader ipsr = new InputStreamReader(ips);
-            BufferedReader br = new BufferedReader(ipsr);
-            String ligne;
-            i = 0;
-            while ((ligne = br.readLine()) != null) {
-                j = 0;
-                for (String mot : ligne.split(";"))
+
+        InputStream ips = new FileInputStream(inputPath);
+        InputStreamReader ipsr = new InputStreamReader(ips);
+        BufferedReader br = new BufferedReader(ipsr);
+        String ligne;
+        i = 0;
+        while ((ligne = br.readLine()) != null) {
+            j = 0;
+            for (String mot : ligne.split(";"))
+                if(j<nbCol)
                     table[i][j++] = mot;
-                i++;
-            }
-            br.close();
-        } catch (Exception e) {
-            System.err.println(e.toString() + e.getMessage());
+            i++;
         }
+        br.close();
+
 
         StringBuilder fms = new StringBuilder();
-        for(int c=1;c<nbCol;c++){
-            fms.append("FM(widget:Name Library");
-            for(int l=1;l<nbLig;l++){
+        for(int c=2;c<nbCol;c++){
+            fms.append("FM(widget:Name Library Unique Concern Input Output;");
+
+            fms.append(" Name:\""+table[0][c]+"\";");
+            fms.append(" Library:\""+inputCSV+"\";");
+            fms.append(" Unique:\""+table[0][c]+"."+inputCSV+"\"");
+            String category = "";
+            for(int l =1;l<nbLig;l++) {
+                if(!table[l][0].equalsIgnoreCase(category)) {
+                    category = table[l][0];
+                    fms.append("; "+category+": ");
+                }
                 if(table[l][c].equals("Oui")) {
-                    fms.append(" " + table[l][0]);
+                    if(category.equalsIgnoreCase("Input") | category.equalsIgnoreCase("Output"))
+                        fms.append("\""+table[l][1]+ "\" ");
+                    else
+                        fms.append(table[l][1]+" ");
                 }
             }
-            fms.append("; Name:\""+table[0][c]+"\";");
-            fms.append(" Library:\""+inputCSV+"\";");
-            fms.append(")\n");
+
+            fms.append(";)\n");
         }
         try{
-            Writer writer = null;
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFmPath), "utf-8"));
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFmPath), "utf-8"));
             writer.write(fms.toString());
             writer.flush();
             writer.close();
@@ -79,37 +81,6 @@ public class CSV2FM {
             System.err.println(e);
         }
 
-        StringBuilder products = new StringBuilder();
-        for(int c=1;c<nbCol;c++){
-            products.append(table[0][c]+" = [widget,");
-            for(int l=1;l<nbLig;l++){
-                if(table[l][c].equals("Oui"))
-                    products.append(" "+table[l][0]+",");
-            }
-            products.deleteCharAt(products.length()-1);
-            products.append("]\n");
-        }
-        try{
-            Writer writer = null;
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputProductPath), "utf-8"));
-            writer.write(products.toString());
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-
-        //System.out.println(fms.toString());
-        //System.out.println(products.toString());
-
-/*		for(int m=0;m<table.length;m++){
-			for(int n=0;n<table[m].length;n++){
-				System.out.print(table[m][n]+" ");
-			}
-			System.out.println("");
-		}
-*/
     }
 
 }
