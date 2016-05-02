@@ -8,7 +8,9 @@ import fr.familiar.variable.FeatureVariable;
 import fr.familiar.variable.Variable;
 import kernel.Pilot;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +27,11 @@ public class Universe {
     private List<Widget> widgets;
 
     /* Launch the evaluation on the file widgetsFormulaPath, line by line.
-     * It should declare the "atomic" features models (products)
-     * we store their fmID in familiar and their formula used to instantiate them in Widgets
-     */
-    public Universe(String inputFormula) throws IOException, UnhandledFamiliarException, VariableNotExistingException, VariableAmbigousConflictException {
-        String widgetsFormulaPath = Universe.class.getClassLoader().getResource(inputFormula+"_fms_functions.fml").getPath();
+         * It should declare the "atomic" features models (products)
+         * we store their fmID in familiar and their formula used to instantiate them in Widgets
+         */
+    public Universe(String inputMultipleFormulas) throws IOException, UnhandledFamiliarException, VariableNotExistingException, VariableAmbigousConflictException {
+        String widgetsFormulaPath = Universe.class.getClassLoader().getResource(inputMultipleFormulas+"_fms_functions.fml").getPath();
 
         widgets = new ArrayList<>();
         // test the existence of the file
@@ -260,6 +262,22 @@ public class Universe {
         } catch (FMEngineException e) {
             throw new BadIDException("The fmID " + fmID + " appears to be incorrect or can't have a configuration instantiated.");
         }
+    }
+
+
+    public List<String> getConcerns() throws BadIDException {
+        List<String> res = new ArrayList<>();
+        FeatureVariable f_var;
+        try{
+            f_var = pilot.getFVariable(fmID +".Concern");
+        } catch (VariableNotExistingException | VariableAmbigousConflictException e) {
+            throw new BadIDException("The fmID " + this.fmID + " appears to be incorrect.");
+        }
+        for(Variable v : f_var.children().getVars()){
+            FeatureVariable fv = (FeatureVariable) v;
+            res.add(fv.getFtName());
+        }
+        return res;
     }
 
     /* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _   Getters & Setters  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _*/
