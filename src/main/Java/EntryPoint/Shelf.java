@@ -20,22 +20,17 @@ import static org.apache.logging.log4j.core.helpers.Loader.getClassLoader;
 /**
  * Created by ivan on 02/05/2016.
  */
-public class Shelf {
+public class Shelf extends Universe{
 
-    // the singleton instance of the pilot
-    private static final Pilot pilot = Pilot.getInstance();
-
-    // the unique fmID of the feature model representing the variability of known widgets in this collection of widget
-    private String fmID;
 
     public Shelf() throws VariableNotExistingException, FMEngineException, VariableAmbigousConflictException, IOException {
-        String path = Shelf.class.getClassLoader().getResource("precalculated_merged_fm.fml").getPath();
+        String path = Shelf.class.getClassLoader().getResource("precalculated_merged_fm_bis.fml").getPath();
         BufferedReader br = new BufferedReader(new FileReader(path));
         StringBuilder sb = new StringBuilder();
         while (br.ready() ){
             sb.append(br.readLine().replace("\n"," "));
         }
-        this.fmID = pilot.declareFM(sb.toString());
+        fmID = pilot.declareFM(sb.toString());
     }
 
     public List<String> getConcernsByReduction(String... features) throws FMEngineException, VariableNotExistingException, VariableAmbigousConflictException {

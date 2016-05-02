@@ -1,6 +1,8 @@
 package EntryPoint;
 
-import exception.*;
+import exception.BadIDException;
+import exception.FMEngineException;
+import exception.GetUniqueElementOnNonCompleteConfiguration;
 import fr.familiar.interpreter.VariableNotExistingException;
 import fr.familiar.parser.VariableAmbigousConflictException;
 import fr.familiar.variable.FeatureModelVariable;
@@ -8,73 +10,20 @@ import fr.familiar.variable.FeatureVariable;
 import fr.familiar.variable.Variable;
 import kernel.Pilot;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ivan on 10/07/2014.
+ * Created by ivan on 02/05/2016.
  */
 public class Universe {
+
+
     // the singleton instance of the pilot
-    private static final Pilot pilot = Pilot.getInstance();
+    protected static final Pilot pilot = Pilot.getInstance();
 
     // the unique fmID of the feature model representing the variability of known widgets in this collection of widget
-    private String fmID;
-    private List<Widget> widgets;
-
-    /* Launch the evaluation on the file widgetsFormulaPath, line by line.
-         * It should declare the "atomic" features models (products)
-         * we store their fmID in familiar and their formula used to instantiate them in Widgets
-         */
-    public Universe(String inputMultipleFormulas) throws IOException, UnhandledFamiliarException, VariableNotExistingException, VariableAmbigousConflictException {
-        String widgetsFormulaPath = Universe.class.getClassLoader().getResource(inputMultipleFormulas+"_fms_functions.fml").getPath();
-
-        widgets = new ArrayList<>();
-        // test the existence of the file
-        if (!new File(widgetsFormulaPath).exists())
-            throw new IOException("The given path -"+widgetsFormulaPath+"- does not exist !");
-        List<String> inlineFMs = pilot.extractFMsByFile(widgetsFormulaPath);
-        List<String> fmIDs = new ArrayList<>();
-
-        for(String formula:inlineFMs){
-            Implementation i = new Implementation(formula);
-            FeatureVariable fv = pilot.getFVariable(i.getFmID()+".Name");
-            String widgetName = fv.children().getVars().toArray(new Variable[]{})[0].getValue();
-            Widget widget = new Widget(widgetName);
-            if(!this.widgets.contains(widget))
-                this.widgets.add(widget);
-            else
-                widget=this.widgets.get(this.widgets.indexOf(widget));
-            widget.addImplementation(i);
-            fmIDs.add(i.getFmID());
-        }
-        this.fmID = pilot.merge(fmIDs);
-    }
-
-    public static Universe merge(Universe u1, Universe u2){
-        List<Widget> widgetList = new ArrayList<>();
-        widgetList.addAll(u1.getWidgets());
-        widgetList.addAll(u2.getWidgets());
-
-
-      List<String> widgetIDList = new ArrayList<>();
-        widgetIDList.addAll(u1.getFMIDs());
-        widgetIDList.addAll(u2.getFMIDs());
-
-        String newID = pilot.merge(widgetIDList);
-        System.out.println("Merging fms "+u1.fmID+" and "+u2.fmID+ "has been performed in "+newID);
-
-/*        List<String> widgetIDList = new ArrayList<>();
-        widgetIDList.add(u1.fmID);
-        widgetIDList.add(u2.fmID);
-        String newID = pilot.merge(widgetIDList);*/
-
-        return new Universe(newID, widgetList);
-    }
+    protected String fmID;
 
 
     public void displayUniverseState() throws BadIDException {
@@ -93,9 +42,9 @@ public class Universe {
     }
 
     /*
-     * This method return the number of asset still available so far.
-     * If their is still a pie chart from AmChart and one from HighChart, their will be counted as two.
-     */
+ * This method return the number of asset still available so far.
+ * If their is still a pie chart from AmChart and one from HighChart, their will be counted as two.
+ */
     public double getNumberSuitableTargets() throws BadIDException{
         try {
             return pilot.countingOnFM(this.fmID);
@@ -118,57 +67,9 @@ public class Universe {
     }
 
     /*
-     * This function take a list of features to select on a given configuration
-     */
-    public void reduceByFeatures(List<String> ls) throws ReductionException, BadIDException, EmptyUniverseException, ReducingException {
-        for(String s : ls)
-            reduceByFeature(s);
-    }
-
-
-    /*
- * This function take a feature to select on a given configuration
+ * Returns the name of the last widget available, if there is only one.
+ * Else : don't use this ! Use getWidgetsNames()
  */
-    public void reduceByFeature(String feature) throws ReductionException, BadIDException, EmptyUniverseException, ReducingException {
-        try {
-            String configID = pilot.newConfig(fmID);
-
-            pilot.selectFeatureOnConfiguration(feature,configID);
-
-            this.fmID = pilot.asFM(configID);
-            List<String> remains = getImplementationUniques();
-            List<String> implementationIDs = new ArrayList<>();
-            List<Widget> newWidgetsList = new ArrayList<>();
-            List<Implementation> newImplementationList = new ArrayList<>();
-            for (String remain : remains) {
-                for (Widget w : this.widgets) {
-                    for (Implementation i : w.getImplementations()) {
-                        if (i.getUnique().equalsIgnoreCase(remain)) {
-                            implementationIDs.add(i.getFmID());
-                            newImplementationList.add(i);
-                            if (!newWidgetsList.contains(w))
-                                newWidgetsList.add(w);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if(implementationIDs.isEmpty())
-                throw new EmptyUniverseException("The reduction by widget should never lead to no widget left !");
-
-            this.fmID = pilot.merge(implementationIDs);
-            this.widgets = newWidgetsList;
-
-        } catch (FMEngineException e) {
-            throw new ReductionException("Something went bad during reduction by the feature " + feature + " on the Universe " + fmID);
-        }
-    }
-
-    /*
-     * Returns the name of the last widget available, if there is only one.
-     * Else : don't use this ! Use getWidgetsNames()
-     */
     public String getLastWidgetName() throws GetUniqueElementOnNonCompleteConfiguration, BadIDException {
         FeatureVariable f_var;
         try{
@@ -219,11 +120,10 @@ public class Universe {
         }
         return res;
     }
-
     /*
-     * Returns the name of the last library available, if there is only one.
-     * Else : don't use this ! Use getLibrariesNames()
-     */
+ * Returns the name of the last library available, if there is only one.
+ * Else : don't use this ! Use getLibrariesNames()
+ */
     public String getLastLibraryName() throws GetUniqueElementOnNonCompleteConfiguration, BadIDException {
         FeatureVariable f_var;
         try{
@@ -279,35 +179,9 @@ public class Universe {
         }
         return res;
     }
-
-    /* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _   Getters & Setters  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _*/
-
-    public List<Widget> getWidgets() {
-        return widgets;
-    }
+        /* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _   Getters & Setters  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _*/
 
     public String getID() {
         return fmID;
     }
-
-    /* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _Private useful methods _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _*/
-
-    private List<String> getFMIDs(){
-        List<String> FMIDs = new ArrayList<>();
-        for(Widget widget : widgets)
-            for(Implementation i : widget.getImplementations())
-                FMIDs.add(i.getFmID());
-        return FMIDs;
-    }
-
-
-    private Universe(String ID, List<Widget> widgets){
-        this.fmID = ID;
-        this.widgets = new ArrayList<>(widgets);
-    }
-
-    private Universe(List<String> widgetsFormulas){
-
-    }
-
 }

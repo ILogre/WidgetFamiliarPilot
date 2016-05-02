@@ -51,11 +51,11 @@ public class CSV2FM {
 
         StringBuilder fms = new StringBuilder();
         for(int c=2;c<nbCol;c++){
-            fms.append("FM(widget:Name Library Unique Concern Input Output;");
+            fms.append("FM(widget:Name Library Concern Input Output;");
 
             fms.append(" Name:\""+table[0][c]+"\";");
             fms.append(" Library:\""+inputCSV+"\";");
-            fms.append(" Unique:\""+table[0][c]+"."+inputCSV+"\"");
+            //fms.append(" Unique:\""+table[0][c]+"."+inputCSV+"\"");
             String category = "";
             for(int l =1;l<nbLig;l++) {
                 if(!table[l][0].equalsIgnoreCase(category)) {
